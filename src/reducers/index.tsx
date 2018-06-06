@@ -4,13 +4,18 @@ import {ADD_PERSON, REMOVE_PERSON, UPDATE_PERSON} from "../actions/constants";
 import {IPerson} from "../types";
 
 export function people(state: IPerson[] = [], action: PersonAction) {
+    let newState = [];
+
     switch (action.type) {
         case ADD_PERSON:
             return [...state, {name: '', email: '', phone: ''}]
         case REMOVE_PERSON:
-            return [...state].splice(action.index, 1)
+            newState = [...state];
+            newState.splice(action.index, 1);
+
+            return newState;
         case UPDATE_PERSON:
-            const newState = [...state];
+            newState = [...state];
             newState.splice(
               action.index, 1, { ...state[action.index], ...action.newData }
             )

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {connect, Dispatch} from "react-redux";
-import {addPerson, PersonAction, updatePerson} from "./actions";
+import {addPerson, PersonAction, removePerson, updatePerson} from "./actions";
 import {bindIndexToActionCreator} from "./actions/support";
 import './App.css';
 import AppPerson from './PersonComponent';
@@ -10,6 +10,7 @@ interface IProps {
     people: IPerson[]
     onAdd?: () => void
     onUpdate: (index: number) => (newData: IPerson) => () => void
+    onRemove: (index: number) => () => void
     dispatch: Dispatch<PersonAction>
 }
 
@@ -22,7 +23,8 @@ export function mapStateToProps(store: IStore) {
 export function mapDispatchToProps(dispatch: Dispatch<PersonAction>) {
     return {
         onAdd: () => dispatch(addPerson()),
-        onUpdate: (index: number) => (newData: IPerson) => () => dispatch(bindIndexToActionCreator(updatePerson, index)(newData))
+        onRemove: (index: number) => () => dispatch(bindIndexToActionCreator(removePerson, index)()),
+        onUpdate: (index: number) => (newData: IPerson) => () => dispatch(bindIndexToActionCreator(updatePerson, index)(newData)),
     }
 }
 
@@ -36,9 +38,11 @@ class App extends React.Component<IProps> {
                   </header>
                   <div>
                       {this.props.people.map((person, index) =>
-                        <div className="rounded shadow bg-white p-4 mt-2">
-                            <AppPerson key={index} person={person} updatePerson={this.props.onUpdate(index)}
-                                       dispatch={this.props.dispatch} />
+                        <div key={index} className="rounded shadow bg-white p-4 mt-2">
+                            <AppPerson person={person}
+                                       updatePerson={this.props.onUpdate(index)}
+                                       removePerson={this.props.onRemove(index)}
+                                       />
                         </div>
                       )}
                       <button className="mt-4 px-4 py-2 border border-green rounded hover:bg-green" onClick={this.props.onAdd}>Add person</button>
